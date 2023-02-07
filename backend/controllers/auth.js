@@ -10,7 +10,14 @@ const register = async (req, res) => {
 
   const token = user.createJWT();
 
-  res.status(StatusCodes.CREATED).json({ user: { name: user.name }, token });
+  res.status(StatusCodes.CREATED).json({
+    user: {
+      email: user.email,
+      name: user.name,
+      location: user.location,
+      token,
+    },
+  });
 };
 
 //Login for Company
@@ -37,7 +44,14 @@ const login = async (req, res) => {
   }
 
   const token = user.createJWT();
-  res.status(StatusCodes.OK).json({ user: { name: user.name }, token });
+  res.status(StatusCodes.OK).json({
+    user: {
+      email: user.email,
+      name: user.name,
+      location: user.location,
+      token,
+    },
+  });
 };
 
 //Regsiter for Job seeker
@@ -80,4 +94,34 @@ const loginJobSeeker = async (req, res) => {
     .json({ jobseeker: { name: jobseeker.name }, token });
 };
 
-module.exports = { register, login, registerJobSeeker, loginJobSeeker };
+const updateUser = async (req, res) => {
+  const { name, email, location } = req.body;
+  if (!name || !email || !location) {
+    throw new BadRequestError("Please provide all values");
+  }
+  const user = await User.findOne({ _id: req.user.userId });
+
+  user.name = name;
+  user.email = email;
+  user.location = location;
+
+  await user.save();
+
+  const token = user.createJWT();
+  res.status(StatusCodes.OK).json({
+    user: {
+      email: user.email,
+      name: user.name,
+      location: user.location,
+      token,
+    },
+  });
+};
+
+module.exports = {
+  register,
+  login,
+  registerJobSeeker,
+  loginJobSeeker,
+  updateUser,
+};

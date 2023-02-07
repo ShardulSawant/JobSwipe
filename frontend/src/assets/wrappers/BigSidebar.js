@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 const Wrapper = styled.aside`
   display: none;
@@ -9,8 +9,8 @@ const Wrapper = styled.aside`
       background: var(--white);
       min-height: 100vh;
       height: 100%;
-      width: 250px;
-      margin-left: -250px;
+      width: 300px;
+      margin-left: -300px;
       transition: var(--transition);
     }
     .content {
@@ -24,7 +24,7 @@ const Wrapper = styled.aside`
       height: 6rem;
       display: flex;
       align-items: center;
-      padding-left: 2.5rem;
+      padding-left: 1.5rem;
     }
     .nav-links {
       padding-top: 2rem;
@@ -62,5 +62,5 @@ const Wrapper = styled.aside`
       color: var(--primary-500);
     }
   }
-`
-export default Wrapper
+`;
+export default Wrapper;

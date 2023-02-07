@@ -36,8 +36,8 @@ const UserSchema = new mongoose.Schema({
   location: {
     type: String,
     required: [true, "Please provide company location"],
-    minlength: 3,
     maxlength: 50,
+    default: "location",
   },
 });
 

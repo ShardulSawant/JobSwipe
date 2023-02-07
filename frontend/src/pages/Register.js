@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import Wrapper from "../assets/wrappers/ErrorPage";
 import { FormRow } from "../components";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, registerUser } from "../features/users/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   name: "",
@@ -13,6 +16,9 @@ const initialState = {
 
 function Register() {
   const [values, setValues] = useState(initialState);
+  const { user, isLoading } = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -23,14 +29,30 @@ function Register() {
   const onSubmit = (e) => {
     e.preventDefault();
     const { name, email, password, isMember } = values;
-    if (!email || !password || (isMember && !name)) {
+    //if (!email || !password || (isMember && !name)) {
+    if (!email || !password) {
       toast.error("Please fill out all the fields");
+      return;
     }
+    console.log("reached on submit method");
+    if (isMember) {
+      dispatch(loginUser({ email: email, password: password }));
+      return;
+    }
+    dispatch(registerUser({ name: name, email: email, password: password }));
   };
 
   const toggleMember = () => {
     setValues({ ...values, isMember: !values.isMember });
   };
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
+  }, [user]);
 
   return (
     <Wrapper className="full-page">
@@ -42,24 +64,21 @@ function Register() {
             type="text"
             name="name"
             value={values.name}
-            handleChange={handleChange}
-          ></FormRow>
+            handleChange={handleChange}></FormRow>
         )}
         {/* Email field */}
         <FormRow
           type="email"
           name="email"
           value={values.email}
-          handleChange={handleChange}
-        ></FormRow>
+          handleChange={handleChange}></FormRow>
         {/* Password field */}
         <FormRow
           type="password"
           name="password"
           value={values.password}
-          handleChange={handleChange}
-        ></FormRow>
-        <button type="submit" className="btn btn-block">
+          handleChange={handleChange}></FormRow>
+        <button type="submit" className="btn btn-block" disabled={isLoading}>
           Submit
         </button>
         <p>

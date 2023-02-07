@@ -27,7 +27,7 @@ const JobSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Open", "Closed"],
+      enum: ["Open", "Closed", "Filled"],
       default: "Open",
     },
     createdBy: {
@@ -57,10 +57,8 @@ const JobSchema = new mongoose.Schema(
     },
     jobType: {
       type: String,
-      required: [
-        true,
-        "Please provide Job type - Full time,temporary,past time",
-      ],
+      enum: ["Full time", "part time", "Limited Contract"],
+      default: "Full time",
     },
     jobMode: {
       type: String,
