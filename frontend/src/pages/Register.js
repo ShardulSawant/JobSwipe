@@ -57,7 +57,7 @@ function Register() {
   return (
     <Wrapper className="full-page">
       <form className="form" onSubmit={onSubmit}>
-        <h3>{values.isMember ? "Login" : "Register"}</h3>
+        <h3>{values.isMember ? " Company Login" : " Company Register"}</h3>
         {/* name field */}
         {!values.isMember && (
           <FormRow

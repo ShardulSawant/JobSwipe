@@ -1,9 +1,9 @@
 import { toast } from "react-toastify";
 import customFetch from "../../utils/axios";
-// import { getUserFromLocalStorage } from "../../utils/localStorage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import { createJobThunk } from "./jobThunk";
 import { logoutUser } from "../users/userSlice";
+import { showLoading, hideLoading, getAllJobs } from "../allJobs/allJobsSlice";
+import { getUserFromLocalStorage } from "../../utils/localStorage";
 
 const initialState = {
   isLoading: false,
@@ -27,7 +27,7 @@ const initialState = {
 export const createJob = createAsyncThunk(
   "job/createJob",
   async (job, thunkAPI) => {
-    console.log({ job });
+    //console.log({ job });
     try {
       const resp = await customFetch.post("/jobs", job, {
         headers: {
@@ -47,6 +47,46 @@ export const createJob = createAsyncThunk(
   }
 );
 
+export const deleteJob = createAsyncThunk(
+  "job/deletejob",
+  async (jobId, thunkAPI) => {
+    thunkAPI.dispatch(showLoading());
+    console.log(jobId);
+
+    try {
+      const resp = await customFetch.delete(`/jobs/${jobId}`, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      thunkAPI.dispatch(getAllJobs());
+      console.log("DELETE job API called");
+      return resp.data.msg;
+    } catch (error) {
+      thunkAPI.dispatch(hideLoading());
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+export const editJob = createAsyncThunk(
+  "job/editjob",
+  async ({ jobId, job }, thunkAPI) => {
+    try {
+      const resp = await customFetch.patch(`/jobs/${jobId}`, job, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      console.log("PATCH job API called");
+      thunkAPI.dispatch(clearValues);
+      return resp.data.msg;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
 const jobSlice = createSlice({
   name: "job",
   initialState,
@@ -55,7 +95,10 @@ const jobSlice = createSlice({
       state[name] = value;
     },
     clearValues: () => {
-      return initialState;
+      return { ...initialState, company: getUserFromLocalStorage()?.name };
+    },
+    setEditJob: (state, { payload }) => {
+      return { ...state, isEditing: true, ...payload };
     },
   },
   extraReducers: {
@@ -70,9 +113,28 @@ const jobSlice = createSlice({
       state.isLoading = false;
       toast.error(payload);
     },
+    [deleteJob.fulfilled]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.success(`Job post deleted`);
+    },
+    [deleteJob.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+    [editJob.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [editJob.fulfilled]: (state) => {
+      state.isLoading = false;
+      toast.success("Job post modified");
+    },
+    [editJob.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
   },
 });
 
-export const { handleChange, clearValues } = jobSlice.actions;
+export const { handleChange, clearValues, setEditJob } = jobSlice.actions;
 
 export default jobSlice.reducer;

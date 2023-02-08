@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
-import { FormRow, FormRowSelect } from "../../components";
+import { FormRow, FormRowSelect, FormRowTextArea } from "../../components";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
   handleChange,
   clearValues,
   createJob,
+  editJob,
 } from "../../features/job/jobSlice";
 
 const AddJob = () => {
   const {
     isLoading,
+    company,
     position,
     statusOptions,
     status,
@@ -27,6 +29,8 @@ const AddJob = () => {
     isEditing,
     editJobId,
   } = useSelector((store) => store.job);
+
+  const { user } = useSelector((store) => store.user);
 
   const dispatch = useDispatch();
 
@@ -44,9 +48,29 @@ const AddJob = () => {
       toast.error("Please fill out all fields");
       return;
     }
+    if (isEditing) {
+      dispatch(
+        editJob({
+          jobId: editJobId,
+          job: {
+            company,
+            position,
+            jobCity,
+            jobCountry,
+            jobDescription,
+            status,
+            jobMode,
+            jobType,
+            jobProfile,
+            salary,
+          },
+        })
+      );
+      return;
+    }
     dispatch(
       createJob({
-        company: "test",
+        company,
         position,
         jobCity,
         jobCountry,
@@ -71,6 +95,10 @@ const AddJob = () => {
     dispatch(clearValues());
   };
 
+  useEffect(() => {
+    dispatch(handleChange({ name: "company", value: user.name }));
+  }, []);
+
   return (
     <Wrapper>
       <form className="form" onSubmit={handleSubmit}>
@@ -81,6 +109,12 @@ const AddJob = () => {
             labelText="Position"
             name="position"
             value={position}
+            handleChange={handleJobInput}></FormRow>
+          <FormRow
+            type="text"
+            labelText="Company"
+            name="company"
+            value={company}
             handleChange={handleJobInput}></FormRow>
           <FormRowSelect
             labelText="Status"
@@ -112,18 +146,18 @@ const AddJob = () => {
             name="jobCountry"
             value={jobCountry}
             handleChange={handleJobInput}></FormRow>
-          <FormRow
-            type="text"
+          <FormRowTextArea
+            type="textarea"
             labelText="Description"
             name="jobDescription"
             value={jobDescription}
-            handleChange={handleJobInput}></FormRow>
-          <FormRow
-            type="text"
+            handleChange={handleJobInput}></FormRowTextArea>
+          <FormRowTextArea
+            type="textarea"
             labelText="Candidate Profile"
             name="jobProfile"
             value={jobProfile}
-            handleChange={handleJobInput}></FormRow>
+            handleChange={handleJobInput}></FormRowTextArea>
           <FormRow
             type="text"
             labelText="Salary range"
