@@ -54,9 +54,9 @@ html {
   --borderRadius: 0.25rem;
   --letterSpacing: 1px;
   --transition: 0.3s ease-in-out all;
-  --max-width: 1120px;
+  --max-width: 1320px;
   --fixed-width: 500px;
-  --fluid-width: 90vw;
+  --fluid-width: 100vw;
   --breakpoint-lg: 992px;
   --nav-height: 6rem;
   /* box shadow*/
@@ -291,7 +291,8 @@ ul {
 
 .container {
   width: var(--fluid-width);
-  max-width: var(--max-width);
+  /* max-width: var(--max-width); */
+  max-width: 1320;
   margin: 0 auto;
 }
 .full-page {

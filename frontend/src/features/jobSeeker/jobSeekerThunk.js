@@ -1,25 +1,25 @@
 import customFetch from "../../utils/axios";
-import { logoutUser } from "./userSlice";
+//import { logoutJobSeeker } from "./jobSeekerslice";
 
-export const registerUserThunk = async (url, user, thunkAPI) => {
+export const registerJobSeekerThunk = async (url, jobSeeker, thunkAPI) => {
   try {
-    const resp = await customFetch.post(url, user);
+    const resp = await customFetch.post(url, jobSeeker);
     return resp.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.msg);
   }
 };
 
-export const loginUserThunk = async (url, user, thunkAPI) => {
+export const loginJobSeekerThunk = async (url, jobSeeker, thunkAPI) => {
   try {
-    const resp = await customFetch.post(url, user);
+    const resp = await customFetch.post(url, jobSeeker);
     return resp.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.msg);
   }
 };
 
-export const updateUserThunk = async (url, user, thunkAPI) => {
+/* export const updateUserThunk = async (url, user, thunkAPI) => {
   try {
     const resp = await customFetch.patch(url, user, {
       headers: {
@@ -36,4 +36,4 @@ export const updateUserThunk = async (url, user, thunkAPI) => {
     console.log(error.response);
     return thunkAPI.rejectWithValue(error.response.data.msg);
   }
-};
+}; */

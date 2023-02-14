@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser } from "../features/users/userSlice";
 import { useNavigate } from "react-router-dom";
+//import { Logo } from "../components/index";
 
 const initialState = {
   name: "",
@@ -57,12 +58,14 @@ function Register() {
   return (
     <Wrapper className="full-page">
       <form className="form" onSubmit={onSubmit}>
+        {/* <Logo></Logo> */}
         <h3>{values.isMember ? " Company Login" : " Company Register"}</h3>
         {/* name field */}
         {!values.isMember && (
           <FormRow
             type="text"
             name="name"
+            labelText="Company name"
             value={values.name}
             handleChange={handleChange}></FormRow>
         )}
@@ -70,12 +73,14 @@ function Register() {
         <FormRow
           type="email"
           name="email"
+          labelText="Company email"
           value={values.email}
           handleChange={handleChange}></FormRow>
         {/* Password field */}
         <FormRow
           type="password"
           name="password"
+          labelText="Password"
           value={values.password}
           handleChange={handleChange}></FormRow>
         <button type="submit" className="btn btn-block" disabled={isLoading}>

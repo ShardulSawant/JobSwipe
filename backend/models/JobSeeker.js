@@ -47,16 +47,15 @@ const JobSeekerSchema = new mongoose.Schema(
     },
     jobType: {
       type: String,
-      required: [
-        true,
-        "Please provide Job type - Full time,temporary,part-time",
-      ],
+      enum: ["Full time", "part time", "Limited Contract"],
+      default: "Full time",
     },
     languages: [
       {
         language: {
           type: String,
           required: [true, "Please provide job seekers language"],
+          default: "English",
         },
         level: {
           type: String,
@@ -87,6 +86,8 @@ const JobSeekerSchema = new mongoose.Schema(
       },
     ],
     certification: [{ type: String }],
+    liked: [],
+    disliked: [],
   },
 
   { timestamps: true }
@@ -100,7 +101,7 @@ JobSeekerSchema.pre("save", async function (next) {
 
 JobSeekerSchema.methods.createJWT = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name },
+    { jobSeekerId: this._id, name: this.name },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_LIFETIME,
@@ -109,6 +110,8 @@ JobSeekerSchema.methods.createJWT = function () {
 };
 
 JobSeekerSchema.methods.comparePassword = async function (candidatePassword) {
+  console.log(candidatePassword);
+  console.log(this.password);
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };

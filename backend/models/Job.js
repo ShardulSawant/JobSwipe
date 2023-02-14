@@ -24,6 +24,7 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide job position"],
       maxlength: 100,
+      text: true,
     },
     status: {
       type: String,
@@ -50,10 +51,12 @@ const JobSchema = new mongoose.Schema(
     jobDescription: {
       type: String,
       required: [true, "Please provide Job Description"],
+      text: true,
     },
     jobProfile: {
       type: String,
       required: [true, "Please provide Job profile"],
+      text: true,
     },
     jobType: {
       type: String,
@@ -65,6 +68,8 @@ const JobSchema = new mongoose.Schema(
       enum: ["On-site", "Remote/Home office", "Hybrid"],
       default: "On-site",
     },
+    liked: [],
+    disliked: [],
   },
   { timestamps: true }
 );

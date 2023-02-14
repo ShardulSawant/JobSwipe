@@ -56,13 +56,27 @@ const login = async (req, res) => {
 
 //Regsiter for Job seeker
 const registerJobSeeker = async (req, res) => {
-  const jobseeker = await JobSeeker.create({ ...req.body });
+  /*  console.log("API Reached");
+  console.log(req.body); */
+  const jobSeeker = await JobSeeker.create({ ...req.body });
 
-  const token = jobseeker.createJWT();
+  const token = jobSeeker.createJWT();
 
-  res
-    .status(StatusCodes.CREATED)
-    .json({ jobseeker: { name: jobseeker.name }, token });
+  res.status(StatusCodes.CREATED).json({
+    jobSeeker: {
+      name: jobSeeker.name,
+      email: jobSeeker.email,
+      jobSeekerCity: jobSeeker.jobSeekerCity,
+      jobSeekerCountry: jobSeeker.jobSeekerCountry,
+      jobType: jobSeeker.jobType,
+      languages: jobSeeker.languages,
+      workExperience: jobSeeker.workExperience,
+      skills: jobSeeker.skills,
+      education: jobSeeker.education,
+      certification: jobSeeker.certification,
+      token,
+    },
+  });
 };
 
 //Login for JobSeeker
@@ -75,23 +89,33 @@ const loginJobSeeker = async (req, res) => {
   }
 
   //Check for user using email
-  const jobseeker = await JobSeeker.findOne({ email });
-
+  const jobSeeker = await JobSeeker.findOne({ email });
   //Check if user exist
-  if (!jobseeker) {
+  if (!jobSeeker) {
     throw new UnauthenticatedError("Invalid credentails");
   }
-
   //Validation for password check
-  const isPasswordCorrect = await jobseeker.comparePassword(password);
+  const isPasswordCorrect = await jobSeeker.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError("Invalid credentails");
   }
 
-  const token = jobseeker.createJWT();
-  res
-    .status(StatusCodes.OK)
-    .json({ jobseeker: { name: jobseeker.name }, token });
+  const token = jobSeeker.createJWT();
+  res.status(StatusCodes.OK).json({
+    jobSeeker: {
+      name: jobSeeker.name,
+      email: jobSeeker.email,
+      jobSeekerCity: jobSeeker.jobSeekerCity,
+      jobSeekerCountry: jobSeeker.jobSeekerCountry,
+      jobType: jobSeeker.jobType,
+      languages: jobSeeker.languages,
+      workExperience: jobSeeker.workExperience,
+      skills: jobSeeker.skills,
+      education: jobSeeker.education,
+      certification: jobSeeker.certification,
+      token,
+    },
+  });
 };
 
 const updateUser = async (req, res) => {
