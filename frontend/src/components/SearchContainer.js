@@ -33,25 +33,27 @@ const SearchContainer = () => {
             labelText="Search"
             type="text"
             name="search"
-            value={localSearch}
+            value={search}
+            handleChange={handleSearch}
           />
           <FormRowSelect
-            labelText="status"
+            labelText="Status"
             name="searchStatus"
             value={searchStatus}
             handleChange={handleSearch}
-            list={["all", ...statusOptions]}
+            list={["All", ...statusOptions]}
           />
 
           <FormRowSelect
-            labelText="type"
+            labelText="Type"
             name="searchType"
             value={searchType}
             handleChange={handleSearch}
-            list={["all", ...jobTypeOptions]}
+            list={["All", ...jobTypeOptions]}
           />
           <FormRowSelect
             name="sort"
+            labelText="Sort"
             value={sort}
             handleChange={handleSearch}
             list={sortOptions}

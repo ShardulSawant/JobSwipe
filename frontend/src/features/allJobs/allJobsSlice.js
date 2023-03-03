@@ -4,8 +4,8 @@ import customFetch from "../../utils/axios";
 
 const initialFiltersState = {
   search: "",
-  searchStatus: "all",
-  searchType: "all",
+  searchStatus: "All",
+  searchType: "All",
   sort: "latest",
   sortOptions: ["latest", "oldest", "a-z", "z-a"],
 };
@@ -14,7 +14,7 @@ const initialState = {
   isLoading: true,
   jobs: [],
   totalJobs: 0,
-  numOfPages: 1,
+  numOfPages: 3,
   page: 1,
   stats: {},
   monthlyApplications: [],
@@ -24,7 +24,14 @@ const initialState = {
 export const getAllJobs = createAsyncThunk(
   "allJobs/getJobs",
   async (_, thunkAPI) => {
-    let url = "/jobs";
+    const { page, search, searchStatus, searchType, sort } =
+      thunkAPI.getState().allJobs;
+    console.log(searchStatus);
+    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`;
+    //
+    if (search) {
+      url = url + `&search=${search}`;
+    }
     try {
       const resp = await customFetch.get(url, {
         headers: {
@@ -32,7 +39,6 @@ export const getAllJobs = createAsyncThunk(
         },
       });
       console.log("GET jobs API called");
-      console.log(resp.data);
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
@@ -69,6 +75,8 @@ const allJobslice = createSlice({
     [getAllJobs.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
       state.jobs = payload.jobs;
+      state.numOfPages = payload.numOfPages;
+      state.totalJobs = payload.totalJobs;
     },
     [getAllJobs.rejected]: (state, { payload }) => {
       state.isLoading = false;
