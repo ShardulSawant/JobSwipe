@@ -24,7 +24,6 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide job position"],
       maxlength: 100,
-      text: true,
     },
     status: {
       type: String,

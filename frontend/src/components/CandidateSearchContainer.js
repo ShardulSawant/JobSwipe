@@ -4,15 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   handleChange,
   clearFilters,
+  getAllJobPositions,
 } from "../features/Candidatelist/candidateAppliedlist";
 import Wrapper from "../assets/wrappers/SearchContainer";
 import customFetch from "../utils/axios";
 import { useState, useEffect } from "react";
+import FormRowSelectPosition from "./FormRowSelectPosition";
 
 const CandidateSearchContainer = () => {
-  let allJobPosition;
-  const { user } = useSelector((store) => store.user);
-  const [jobPositionOptions, setJobPositionOptions] = useState([]);
+  const { jobPositionOptions } = useSelector((store) => store.allCandidates);
+  //const [jobPositionOptions, setJobPositionOptions] = useState([]);
 
   const { isLoading, search, jobPosition } = useSelector(
     (store) => store.allCandidates
@@ -24,22 +25,13 @@ const CandidateSearchContainer = () => {
     dispatch(handleChange({ name: e.target.name, value: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(clearFilters());
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   dispatch(clearFilters());
+  // };
 
   useEffect(() => {
-    customFetch
-      .get("/jobs/jobPositons", {
-        headers: {
-          authorization: `Bearer ${user.token}`,
-        },
-      })
-      .then((response) => {
-        allJobPosition = response.data.jobPositions;
-        setJobPositionOptions(allJobPosition.map((obj) => obj.position));
-      });
+    dispatch(getAllJobPositions());
   }, []);
 
   return (
@@ -47,26 +39,26 @@ const CandidateSearchContainer = () => {
       <form className="form">
         <h4>Search Candidate</h4>
         <div className="form-center">
-          <FormRow
+          {/* <FormRow
             labelText="Search"
             type="text"
             name="search"
             value={search}
             handleChange={handleSearch}
-          />
-          <FormRowSelect
+          /> */}
+          <FormRowSelectPosition
             labelText="Job Positions"
-            name="jobPositions"
+            name="jobPosition"
             value={jobPosition}
             handleChange={handleSearch}
             list={jobPositionOptions}
           />
-          <button
+          {/* <button
             className="btn btn-block btn-danger"
             disabled={isLoading}
             onClick={handleSubmit}>
             clear filters
-          </button>
+          </button> */}
         </div>
       </form>
     </Wrapper>

@@ -2,6 +2,7 @@ const Job = require("../models/Job");
 const JobSeeker = require("../models/JobSeeker");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError } = require("../errors/index");
+const ObjectId = require("mongodb").ObjectId;
 
 const getAllJobs = async (req, res) => {
   const { search, status, jobType, sort } = req.query;
@@ -44,7 +45,7 @@ const getAllJobs = async (req, res) => {
 
   //code for pagination
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 4;
+  const limit = Number(req.query.limit) || 3;
   const skip = (page - 1) * limit;
 
   result = result.skip(skip).limit(limit);
@@ -61,13 +62,15 @@ const getAllJobs = async (req, res) => {
 };
 
 let getAllJobPositions = async (req, res) => {
-  let jobPositions = [];
-  jobPositions = await Job.find({}, { position: 1, _id: 0 });
-  const obj = {
-    position: "All",
-  };
+  const companyId = req.user.userId;
+  let jobPositions = await Job.find({ createdBy: companyId }, { position: 1 });
+  obj = { _id: "101", position: "All" };
   jobPositions.push(obj);
-  res.status(StatusCodes.OK).json({ jobPositions });
+  if (jobPositions.length > 0) {
+    res.status(StatusCodes.OK).json({ jobPositions });
+  } else {
+    throw new NotFoundError("No Job position found for the company ");
+  }
 };
 
 const getJob = async (req, res) => {
@@ -154,34 +157,47 @@ const deleteJob = async (req, res) => {
 };
 
 const getAllLikedJobs = async (req, res) => {
+  const { jobPosition } = req.query;
   const companyId = req.user.userId;
   let jobSeekerArray = [];
-
-  const jobs = await Job.find(
-    { createdBy: companyId },
-    { position: 1, liked: 1 }
-  );
-
-  for (var i = 0; i < jobs.length; i++) {
-    if (jobs[i].liked.length > 0) {
-      console.log(jobs[i].liked);
-      var jobSeekerObj = await JobSeeker.find({
-        _id: { $in: jobs[i].liked },
+  let jobs = await Job.find({ createdBy: companyId }, { position: 1 });
+  if (jobPosition && jobPosition !== "All") {
+    jobs = jobs.filter((job) => job.position === jobPosition);
+    //console.log(jobs);
+  }
+  if (jobs.length > 0) {
+    let counter = 0;
+    for (var i = 0; i < jobs.length; i++) {
+      const jobSeekerObj = await JobSeeker.find({
+        liked: {
+          $exists: true,
+          $ne: [],
+          $in: [ObjectId(jobs[i]._id).toString()],
+        },
       });
       if (jobSeekerObj) {
-        var obj = {
-          jobPost: jobs[i],
-          jobSeekerLikedJob: jobSeekerObj,
-        };
-        jobSeekerArray.push(obj);
-      } else {
-        throw new NotFoundError("No application for the job");
+        jobSeekerArray.push(jobSeekerObj);
       }
-      //console.log(jobSeekerObj);
     }
-    /*     */
   }
-  res.status(StatusCodes.OK).json({ jobSeekerArray });
+  if (jobSeekerArray) {
+    res.status(StatusCodes.OK).json({ jobSeekerArray });
+  } else {
+    throw new NotFoundError("No application for the job");
+  }
+};
+
+const postShortlistCandidate = async (req, res) => {
+  // const {
+  //   jobSeekerId, JobPosition
+  // } = req.body
+  console.log(req.body);
+  res.status(StatusCodes.OK);
+};
+
+const postRejectCandidate = async (req, res) => {
+  console.log(req.body);
+  res.status(StatusCodes.OK);
 };
 
 module.exports = {
@@ -192,4 +208,6 @@ module.exports = {
   updateJob,
   deleteJob,
   getAllLikedJobs,
+  postShortlistCandidate,
+  postRejectCandidate,
 };

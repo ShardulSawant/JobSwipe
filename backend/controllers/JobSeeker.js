@@ -17,6 +17,7 @@ const getJobSuggesion = async (req, res) => {
     }
 
     const jobseekerSkills = jobseeker.skills;
+    //console.log(jobseekerSkills.join(" "));
 
     const jobs = await Job.find(
       {
@@ -34,8 +35,11 @@ const getJobSuggesion = async (req, res) => {
         score: { $meta: "textScore" },
       })
       .limit(10);
-
-    res.status(StatusCodes.OK).json({ jobs });
+    if (jobs.length <= 0) {
+      throw new BadRequestError("No Jobs found");
+    } else {
+      res.status(StatusCodes.OK).json({ jobs });
+    }
   } catch (error) {
     throw new BadRequestError(error);
   }
@@ -51,7 +55,7 @@ const postJobLiked = async (req, res) => {
     jobSeekerData = await JobSeeker.findById(jobSeekerId);
     //push the liked data
     jobSeekerData.liked.push(jobId);
-    console.log(jobSeekerData);
+    //console.log(jobSeekerData);
     //update data with liked job
     await JobSeeker.findOneAndUpdate(
       {
@@ -75,7 +79,7 @@ const postJobDisliked = async (req, res) => {
     jobSeekerData = await JobSeeker.findById(jobSeekerId);
     //push the liked data
     jobSeekerData.disliked.push(jobId);
-    console.log(jobSeekerData);
+    //console.log(jobSeekerData);
     //update data with liked job
     await JobSeeker.findOneAndUpdate(
       {

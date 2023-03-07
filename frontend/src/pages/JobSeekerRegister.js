@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import Wrapper from "../assets/wrappers/DashboardFormPage";
+import Wrapper from "../assets/wrappers/ErrorPage";
 import { FormRow, FormRowSelect } from "../components";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -74,7 +74,7 @@ const JobSeekerRegister = () => {
   }, [jobSeeker]);
 
   return (
-    <Wrapper>
+    <Wrapper className="full-page">
       <form className="form" onSubmit={onSubmit}>
         {/* <Logo></Logo> */}
         <h3>

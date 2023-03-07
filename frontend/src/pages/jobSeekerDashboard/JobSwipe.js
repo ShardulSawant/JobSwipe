@@ -39,6 +39,10 @@ const JobSwipe = () => {
         console.log(firstData);
         setAllData(response.data.jobs);
         showfirstprofile();
+      })
+      .catch((response) => {
+        setshowCard(false);
+        toast.error("No Jobs found for user");
       });
   }, []);
 
